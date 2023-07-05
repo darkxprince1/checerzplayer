@@ -9,13 +9,43 @@ integer,intent(out):: Move(2,2)
   integer :: bestMoveScore
   logical :: foundBestMove
 	  integer :: i, j
-	  integer :: score
+	  integer :: score 
+	  ! Internal subroutines
+
   ! Initialize variables
   bestMoveScore = -1
   foundBestMove = .false.
 
   ! Iterate over each position on the board
  
+	      ! Iterate over each position on the board
+  do i = 1, 8
+    do j = 1, 8
+      ! Check if the current position is a valid move for the player
+      call IsValidMove(board, player, i, j) 
+        ! Evaluate the desirability of the move
+        call EvaluateMove(board, player, i, j, score)
+
+        ! Update the best move if the current move has a higher score
+        if (score > bestMoveScore) then
+          bestMoveRow = i
+          bestMoveCol = j
+          bestMoveScore = score
+          foundBestMove = .true.
+        end if
+      
+   		   end do
+  end do
+ 
+
+  ! Make the best move if a valid move was found
+  if (foundBestMove) then
+    call MakeMove(board, player, bestMoveRow, bestMoveCol)
+  end if
+
+
+
+
 
 
  function IsValidMove(board, player, row, col) result(valid)
@@ -38,7 +68,7 @@ integer,intent(out):: Move(2,2)
   end if
 
   ! Check if the player is moving a normal checker or a king checker
-  if (player == 1) then
+   if (player == 1) then
     ! Check if the piece is a normal checker
      if (board(row, col) == 1) then
         ! Check if the player can move diagonally down
@@ -172,7 +202,7 @@ integer,intent(out):: Move(2,2)
         end if
     end if
 end if
-end if 
+  end if
 
  ! If none of the conditions are met, the move is not valid
   valid = .false.
@@ -180,12 +210,7 @@ end if
 end function IsValidMove
 
 
-		    do i = 1, 8
-    do j = 1, 8
-      ! Check if the current position is a valid move for the player
-      if (IsValidMove(board, player, i, j)) then
-      
-
+		  
 
 
 	function EvaluateMove(board, player, row, col) result(score)
@@ -355,23 +380,7 @@ end if
 
   end function EvaluateMove
 
-	  ! Evaluate the desirability of the move
-        score = EvaluateMove(board, player, i, j)
-
-        ! Update the best move if the current move has a higher score
-        if (score > bestMoveScore) then
-          bestMoveRow = i
-          bestMoveCol = j
-          bestMoveScore = score
-          foundBestMove = .true.
-        end if
-      end if
-    end do
-  end do
-
- 
-
-
+	  
 
   subroutine MakeMove(board, player, bestMoveRow, bestMoveCol)
   implicit none
@@ -385,9 +394,4 @@ end if
 end subroutine MakeMove
 
 
-		  ! Make the best move if a valid move was found
-  if (foundBestMove) then
-    MakeMove(board, player, bestMoveRow, bestMoveCol)
-  end if
-
-end subroutine player1
+	 end subroutine player1
