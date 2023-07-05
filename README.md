@@ -1,71 +1,37 @@
 Subroutine player1 (Board,Move,Player)
 Implicit None
-Integer,intent(in)::board(8,8),Player
-integer,intent(out):: Move(2,2)
+Integer, intent(in) :: board(8,8), Player
+Integer, intent(out) :: Move(2,2)
 
-			
-  ! Variables for tracking the best move
-  integer :: bestMoveRow, bestMoveCol
-  integer :: bestMoveScore
-  logical :: foundBestMove
-	  integer :: i, j
-	  integer :: score 
-	  ! Internal subroutines
+! Variables for tracking the best move
+Integer :: bestMoveRow, bestMoveCol
+Integer :: bestMoveScore
+Logical :: foundBestMove
+Integer :: row, col
+Integer :: i,j
+   logical :: valid
+	    integer :: score
+		
 
-  ! Initialize variables
-  bestMoveScore = -1
-  foundBestMove = .false.
 
-  ! Iterate over each position on the board
- 
-	      ! Iterate over each position on the board
-  do i = 1, 8
-    do j = 1, 8
-      ! Check if the current position is a valid move for the player
-      call IsValidMove(board, player, i, j) 
-        ! Evaluate the desirability of the move
-        call EvaluateMove(board, player, i, j, score)
+! Internal subroutines
 
-        ! Update the best move if the current move has a higher score
-        if (score > bestMoveScore) then
-          bestMoveRow = i
-          bestMoveCol = j
-          bestMoveScore = score
-          foundBestMove = .true.
-        end if
-      
-   		   end do
-  end do
- 
-
-  ! Make the best move if a valid move was found
-  if (foundBestMove) then
-    call MakeMove(board, player, bestMoveRow, bestMoveCol)
-  end if
+! Initialize variables
+bestMoveScore = -1
+foundBestMove = .false. 
 
 
 
-
-
-
- function IsValidMove(board, player, row, col) result(valid)
-  implicit none
-  integer, dimension(8, 8), intent(in) :: board
-  integer, intent(in) :: player
-  integer, intent(in) :: row, col
-  logical :: valid
-
-  ! Check if the position is within the board boundaries
-  if (row < 1 .or. row > 8 .or. col < 1 .or. col > 8) then
-    valid = .false.
-    return
-  end if
+! Iterate over each position on the board
+do row = 1, 8
+  do col = 1, 8
+    ! Check if the current position is a valid move for the player
 
   ! Check if the position is empty
   if (board(row, col) /= 0) then
     valid = .false.
     return
-  end if
+  
 
   ! Check if the player is moving a normal checker or a king checker
    if (player == 1) then
@@ -77,6 +43,7 @@ integer,intent(out):: Move(2,2)
             ! Check if the position below and to the left/right is empty
              if (board(row + 1, col - 1) == 0 .or. board(row + 1, col + 1) == 0) then
                 valid = .true.
+
             else if (board(row + 1, col - 1) == 2 .or. board(row + 1, col + 1) == 2) then
                 ! Check if the back of the opponent's piece is open
                 if (row < 7 .and. (col > 2 .or. col < 7)) then
@@ -203,23 +170,14 @@ integer,intent(out):: Move(2,2)
     end if
 end if
   end if
+  end if
 
  ! If none of the conditions are met, the move is not valid
   valid = .false.
 
-end function IsValidMove
 
 
 		  
-
-
-	function EvaluateMove(board, player, row, col) result(score)
-  implicit none
-  integer, intent(in) :: board(:,:)
-  integer, intent(in) :: player
-  integer, intent(in) :: row, col
-  integer :: score
-
   ! Initialize score to 0
   score = 0
 
@@ -376,22 +334,30 @@ endif
   end if
 end if
   ! Return the final score
-  EvaluateMove = score
+  			
 
-  end function EvaluateMove
+	  if (valid .EQV. .true.) then
 
-	  
+			  ! Update the best move if the current move has a higher score
+    if (score > bestMoveScore) then
+      bestMoveRow = row
+      bestMoveCol = col
+      bestMoveScore = score
+      foundBestMove = .true.
+    end if
+	end if 
+  end do
+end do
 
-  subroutine MakeMove(board, player, bestMoveRow, bestMoveCol)
-  implicit none
-  integer, dimension(8, 8) :: board
-  integer :: player
-  integer :: bestMoveRow, bestMoveCol
-
-  ! Update the game board with the best move
-  board(bestMoveRow, bestMoveCol) = player
-
-end subroutine MakeMove
+! Make the best move if a valid move was found
+if (foundBestMove) then
+  
+    Move(1, 1) = i
+  Move(1, 2) = j
+  Move(2, 1) = bestMoveRow
+  Move(2, 2) = bestMoveCol
 
 
-	 end subroutine player1
+end if
+
+End Subroutine player1
